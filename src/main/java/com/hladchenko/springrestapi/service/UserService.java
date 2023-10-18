@@ -39,4 +39,8 @@ public class UserService {
         user.addNote(note);
         return user;
     }
+
+    public List<Note> getNotes(UUID uuid) {
+        return userMap.get(uuid).getNotes();
+    }
 }

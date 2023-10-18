@@ -2,13 +2,15 @@ package com.hladchenko.springrestapi.controller;
 
 import com.hladchenko.springrestapi.entity.Note;
 import com.hladchenko.springrestapi.entity.User;
-import com.hladchenko.springrestapi.excetion.UserNotFoundException;
 import com.hladchenko.springrestapi.service.UserService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RequestMapping("/user")
 @RestController
@@ -20,8 +22,11 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public EntityModel<User> createUser(@RequestBody User user) throws Exception {
+        return EntityModel.of(userService.addUser(user),
+                linkTo(methodOn(UserController.class)
+                        .getUser(user.getId()))
+                        .withSelfRel());
     }
 
     @DeleteMapping
@@ -30,8 +35,14 @@ public class UserController {
     }
 
     @GetMapping
-    public User getUser(@RequestParam UUID uuid) {
-        return userService.getUser(uuid);
+    public EntityModel<User> getUser(@RequestParam UUID uuid) throws Exception {
+        return EntityModel.of(userService.getUser(uuid),
+                linkTo(methodOn(UserController.class)
+                        .deleteUser(uuid))
+                        .withRel("Delete URL"),
+                linkTo(methodOn(NoteController.class)
+                        .getNotes(uuid))
+                        .withRel("Get all user notes"));
     }
 
     @GetMapping("/all")
