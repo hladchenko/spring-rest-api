@@ -30,8 +30,11 @@ public class UserController {
     }
 
     @DeleteMapping
-    public User deleteUser(@RequestParam UUID uuid) {
-        return userService.deleteUser(uuid);
+    public EntityModel<User> deleteUser(@RequestParam UUID uuid) {
+        return EntityModel.of(userService.deleteUser(uuid),
+                linkTo(methodOn(UserController.class)
+                        .getUsers())
+                        .withRel("Get all users"));
     }
 
     @GetMapping
