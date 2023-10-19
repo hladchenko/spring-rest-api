@@ -12,17 +12,17 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RestController
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping
-    public EntityModel<User> createUser(@RequestBody User user) throws Exception {
+    public EntityModel<User> createUser(@RequestBody User user) {
         return EntityModel.of(userService.addUser(user),
                 linkTo(methodOn(UserController.class)
                         .getUser(user.getId()))
@@ -37,8 +37,8 @@ public class UserController {
                         .withRel("Get all users"));
     }
 
-    @GetMapping
-    public EntityModel<User> getUser(@RequestParam UUID uuid) throws Exception {
+    @GetMapping("/{uuid}")
+    public EntityModel<User> getUser(@PathVariable UUID uuid) {
         return EntityModel.of(userService.getUser(uuid),
                 linkTo(methodOn(UserController.class)
                         .deleteUser(uuid))
@@ -48,7 +48,7 @@ public class UserController {
                         .withRel("Get all user notes"));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<User> getUsers() {
         return userService.getUsers();
     }

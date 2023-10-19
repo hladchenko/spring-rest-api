@@ -5,18 +5,25 @@ import com.hladchenko.springrestapi.entity.User;
 import com.hladchenko.springrestapi.excetion.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService {
-    private static final Map<UUID, User> userMap = new HashMap<>();
+    private static final Map<UUID, User> userMap = new ConcurrentHashMap<>();
 
     public List<User> getUsers() {
         return userMap.values().stream().toList();
     }
 
     public User getUser(UUID uuid) {
-        return userMap.get(uuid);
+        User user = userMap.get(uuid);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 
     public User addUser(User user) {
@@ -27,6 +34,10 @@ public class UserService {
     }
 
     public User deleteUser(UUID uuid) {
+        User user = userMap.get(uuid);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         return userMap.remove(uuid);
     }
 

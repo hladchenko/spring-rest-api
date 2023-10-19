@@ -1,4 +1,4 @@
 package com.hladchenko.springrestapi.excetion;
 
-public class UserNotFoundException extends Exception {
+public class UserNotFoundException extends RuntimeException {
 }
